@@ -12,7 +12,7 @@ async function AddPost(userId, files, Caption = "") {
 const upload = require("express-fileupload");
 
 const s3 = new AWS.S3({
-    endpoint: "https://s3.ir-thr-at1.arvanstorage.com",
+    endpoint: process.env.AWS_EndPointUrl,
     accessKeyId: process.env.AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
 });
