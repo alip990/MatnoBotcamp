@@ -15,7 +15,14 @@ const User = mongoose.model("User", {
         required: true,
         minlength: 5,
         maxlength: 100,
-        unique: true
+        unique: true,
+        validate: {
+            validator: (val) => {
+                var regxPhone = /^\w*$/;
+                return regxPhone.test(val);
+            },
+            message: "ایمیل وارد شده درست نمیباشد"
+        }
     },
     Password: {
         type: String,
@@ -25,7 +32,7 @@ const User = mongoose.model("User", {
     },
     Email: {
         type: String,
-        required: true,
+        // required: true,
         minlength: 5,
         maxlength: 100,
         unique: true,
@@ -39,7 +46,7 @@ const User = mongoose.model("User", {
     },
     PhoneNumber: {
         type: String,
-        required: true,
+        // required: true,
         minlength: 10,
         maxlength: 12,
         unique: true,
@@ -53,7 +60,7 @@ const User = mongoose.model("User", {
     },
     Website: {
         type: String,
-        required: true,
+        // required: true,
         minlength: 5,
         maxlength: 100,
         validate: {
@@ -68,33 +75,33 @@ const User = mongoose.model("User", {
         type: Boolean,
         default: false,
         required: true,
-        validate: {
-            validator: (val) => {
-                if (this.Email == "" || this.Email == null || this.Email == undefined)
-                    return false;
-                return true;
-            },
-            message: "ایمیلی برای وریفای شدن وجود ندارد"
-        }
+        // validate: {
+        //     validator: (val) => {
+        //         if (this.Email == "" || this.Email == null || this.Email == undefined)
+        //             return false;
+        //         return true;
+        //     },
+        //     message: "ایمیلی برای وریفای شدن وجود ندارد"
+        // }
     },
     PhoneNumberVerified: {
         type: Boolean,
         default: false,
         required: true,
-        validate: {
-            validator: (val) => {
-                if (this.Email == "" || this.Email == null || this.Email == undefined)
-                    return false;
-                return true;
-            },
-            message: "شماره تلفنی برای وریفای شدن وجود ندارد"
-        }
+        // validate: {
+        //     validator: (val) => {
+        //         if (this.Email == "" || this.Email == null || this.Email == undefined)
+        //             return false;
+        //         return true;
+        //     },
+        //     message: "شماره تلفنی برای وریفای شدن وجود ندارد"
+        // }
     },
     Bio: String,
     Gender: {
         type: String,
         enum: ["Mam", "Woman"],
-        required: true,
+        // required: true,
     },
     BlueTick: {
         type: Boolean,

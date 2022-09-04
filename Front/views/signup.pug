@@ -4,7 +4,9 @@ html
    body
       if(message)
          h4 #{message}
-      form(action = "/signup" method = "POST")
-         input(name = "name" type = "text" required placeholder = "Name")
+      form(action = "/accounts/signup" method = "POST")
+         input(name = "mobileOrEmail" type = "text" required placeholder = "Mobile Number or Email")
+         input(name = "username" type = "text" required placeholder = "Username")
+         input(name = "name" type = "text" required placeholder = "Full Name")
          input(name = "password" type = "password" required placeholder = "Password")
          button(type = "Submit") Sign me up!

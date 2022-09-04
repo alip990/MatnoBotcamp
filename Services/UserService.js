@@ -1,17 +1,24 @@
 const ValuesModel = require('../Models/User');
+const ValuesModelConnection = require('../Models/UserConnection');
 const User = ValuesModel.User;
 const CodeLogin = ValuesModel.CodeLogin;
+const UserConnection = ValuesModelConnection.UserConnection;
 
 const ConvertTOHash = require("./HashService");
 
 async function CreateUser(Name, Username, Password, MobileOrEmail) {
     Password = await ConvertTOHash(Password);
-    let result = new {};
+    let result = {};
     try {
         if (MobileOrEmail.match(/^(\+98|0)?9\d{9}$/)) //is mobile
-            result.data = await new User(new { Name, Username, Password, PhoneNumber: MobileOrEmail });
-        if (MobileOrEmail.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) //is email
-            result.data = await new User(new { Name, Username, Password, Email: MobileOrEmail });
+        {
+            console.log("It is mobile number");
+            result.data = await new User({ Name, Username, Password, PhoneNumber: MobileOrEmail }).save();
+        } else if (MobileOrEmail.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) //is email
+        {
+            console.log("It is Email number");
+            result.data = await new User({ Name, Username, Password, Email: MobileOrEmail }).save();
+        }
         if (result.data != null)
             result.isSuccess = true;
         else {
@@ -30,7 +37,7 @@ async function CreateUser(Name, Username, Password, MobileOrEmail) {
 
 async function Login(Username, Password) {
     Password = await ConvertTOHash(Password);
-    let result = new {};
+    let result = {};
     try {
         result.data = await User.findOne({ Username, Password });
         if (result.data != null)
@@ -50,7 +57,7 @@ async function Login(Username, Password) {
 }
 
 async function EditUser(Id, Name, Username, Website, Bio, Email, PhoneNumber, Gender) {
-    let result = new {};
+    let result = {};
     try {
         result.data = await User.updateOne({ Id }, { Name, Username, Website, Bio, Email, PhoneNumber, Gender });
         if (result.data != null)
@@ -71,9 +78,11 @@ async function EditUser(Id, Name, Username, Website, Bio, Email, PhoneNumber, Ge
 
 //وقتی کاربر جدید میخواد ساخته بشه یا کاربر میخواد اسمشو تغییر بده با ajax چک میکنیم ببینیم چنین یوزر نیمی وجود نداشته باشد
 async function CheckExistUsername(Username) {
-    let result = new {};
+    let result = {};
     try {
+        console.log("CheckExistUserNameFunc");
         result.data = await User.exists({ Username });
+        console.log(result);
         if (result.data != null)
             result.isSuccess = true;
         else {
@@ -81,6 +90,7 @@ async function CheckExistUsername(Username) {
             result.message = "دیتا با موفقیت دریافت نشد"
         }
     } catch (error) {
+        console.log("catch:", result)
         result.isSuccess = false;
         result.message = "مشکلی در دیتابیس به وجود آمده";
         result.log = result.message + "\n" + error;
@@ -91,7 +101,7 @@ async function CheckExistUsername(Username) {
 }
 
 async function CheckExistPhoneNumber(PhoneNumber) {
-    let result = new {};
+    let result = {};
     try {
         result.data = await User.exists({ PhoneNumber });
         if (result.data != null)
@@ -111,7 +121,7 @@ async function CheckExistPhoneNumber(PhoneNumber) {
 }
 
 async function CheckExistEmail(Email) {
-    let result = new {};
+    let result = {};
     try {
         result.data = await User.exists({ Email });
         if (result.data != null)
@@ -130,6 +140,45 @@ async function CheckExistEmail(Email) {
     }
 }
 
+async function getById(_id) {
+    let result = {};
+    try {
+        result.data = await User.findById(_id);
+        if (result.data != null)
+            result.isSuccess = true;
+        else {
+            result.isSuccess = false;
+            result.message = "دیتا با موفقیت دریافت نشد"
+        }
+    } catch (error) {
+        result.isSuccess = false;
+        result.message = "مشکلی در دیتابیس به وجود آمده";
+        result.log = result.message + "\n" + error;
+        console.log(result.log);
+    } finally {
+        return result;
+    }
+
+}
+async function CheckExistById(_id) {
+    let result = {};
+    try {
+        result.data = await User.exists({ _id });
+        if (result.data != null)
+            result.isSuccess = true;
+        else {
+            result.isSuccess = false;
+            result.message = "دیتا با موفقیت دریافت نشد"
+        }
+    } catch (error) {
+        result.isSuccess = false;
+        result.message = "مشکلی در دیتابیس به وجود آمده";
+        result.log = result.message + "\n" + error;
+        console.log(result.log);
+    } finally {
+        return result;
+    }
+}
 //برای وریفای شماره تماس و ایمیل فانکشن بذار
 //وقتی برای لاگین رمزشو فراموش کرده بتونه با ایمیل یا شماره تماسش لاگین بشه
 
@@ -137,3 +186,32 @@ async function CheckExistEmail(Email) {
 
 
 // }
+
+async function ShowProfile(username) {
+    let result = {};
+    try {
+        console.log("CheckExistUserNameFunc");
+        result.data = await User.exists({ username });
+        result.data.fallowers = await UserConnection.count({ FallowingId: result.data._id })
+        result.data.fallowings = await UserConnection.count({ FalowerId: result.data._id })
+        console.log(result.data.fallowers);
+        console.log(result.data.fallowings);
+        console.log(result);
+        if (result.data != null)
+            result.isSuccess = true;
+        else {
+            result.isSuccess = false;
+            result.message = "دیتا با موفقیت دریافت نشد"
+        }
+    } catch (error) {
+        console.log("catch:", result)
+        result.isSuccess = false;
+        result.message = "مشکلی در دیتابیس به وجود آمده";
+        result.log = result.message + "\n" + error;
+        console.log(result.log);
+    } finally {
+        return result;
+    }
+}
+
+module.exports = { CreateUser, Login, EditUser, CheckExistUsername, CheckExistPhoneNumber, CheckExistEmail, getById, CheckExistById }

@@ -1,5 +1,5 @@
-const Post = require('../Models/Post').Post;
-const PostFiles = require('../Models/PostFiles').PostFiles;
+const Post = require('../models/Post').Post;
+const PostFiles = require('../models/PostFiles').PostFiles;
 
 
 async function AddPost(userId, files, Caption = "") {
