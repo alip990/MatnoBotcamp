@@ -37,6 +37,7 @@ setStatic(app);
 app.use("/account",require('./routes/accountRoute'));
 app.use("/users",require('./routes/userRoute'));
 app.use("/post",require('./routes/postRoute'));
+app.use("/comment",require('./routes/commentRoute'));
 //#region 404
 app.use(errorHandler)
 //#endregion

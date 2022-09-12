@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const Yup = require('yup'); 
 const user = require('./user');
 
 const {schema} = require('./security/userImageUploadValidation');

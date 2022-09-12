@@ -2,6 +2,8 @@ const User = require("../models/user");
 const UserConnection = require("../models/userConnection");
 const imageUpload = require('../models/userImageUpload');
 const post= require('../models/post');
+const follow = require('../models/userConnection');
+
 
 const shortId = require("shortid");
 const sharp = require("sharp");
@@ -111,16 +113,7 @@ exports.createProfile = async(req,res,next)=>{
         await fs.unlinkSync( `${appRoot}/public/uploads/profile/${oldProfile.image}`);
         await imageUpload.findByIdAndRemove(oldProfile._id.toString())
        
-      //   fs.unlink(uploadPath, (err) => {
-      //     if (err) {
-      //         console.log(err);
-      //         const error = new Error(
-      //             "خطای در پاکسازی عکس پست مربوطه رخ داده است"
-      //         );
-      //         error.statusCode = 400;
-      //         throw error;
-      //     } 
-      // });
+      
 
       }
       await imageUpload.imageValidation({image});
@@ -144,4 +137,36 @@ exports.createProfile = async(req,res,next)=>{
   }
   }
 
+//#endregion
+
+//#region get follower
+exports.getAllFollower = async(req,res,next)=>{
+  try {
+    console.log("0000000000000000000000000000000000");
+    let userId = req.params.id
+    if(userId===undefined){
+      userId = req.userId
+    }
+    const followers =await follow.find({FallowingId:userId}).populate('FalowerId');
+    res.status(200).json({followers})
+  } catch (error) {
+    next(error);
+  }
+}
+//#endregion
+
+//#region get following
+exports.getAllFollowing = async(req,res,next)=>{
+  try {
+    console.log("0000000000000000000000000000000000");
+    let userId = req.params.id
+    if(userId===undefined){
+      userId = req.userId
+    }
+    const followings =await follow.find({FalowerId:userId}).populate('FallowingId');
+    res.status(200).json({followings})
+  } catch (error) {
+    next(error);
+  }
+}
 //#endregion
