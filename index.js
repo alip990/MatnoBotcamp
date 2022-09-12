@@ -35,10 +35,16 @@ setStatic(app);
 
 //#region Routes
 app.use("/account",require('./routes/accountRoute'));
+app.use("/users",require('./routes/userRoute'));
+app.use("/post",require('./routes/postRoute'));
 //#region 404
 app.use(errorHandler)
 //#endregion
 //#endregion
+
+
+
+
 const port = process.env.PORT||4000;
 const server = app.listen(port, () =>
 console.log(`Server Run in ${process.env.NODE_ENV} on port ${port}`)
