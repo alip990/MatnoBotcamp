@@ -74,11 +74,7 @@ exports.handleLogin = async(req, res, next) => {
               
               
           );
-          // if(req.rememberMy===true){
-          //   res.cookie("token",token,{
-          //     maxAge:2*24*60*60*1000
-          //   })
-          // }
+         
           res.status(200).json({ token, userId: user._id.toString() });
       } else {
           const error = new Error("آدرس ایمیل یا کلمه عبور اشتباه است");

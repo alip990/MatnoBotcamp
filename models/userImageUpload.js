@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const user = require('./user');
 
 const {schema} = require('./security/userImageUploadValidation');
 
@@ -12,7 +11,7 @@ const imageSchema = new mongoose.Schema({
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: user,
+        ref: "users",
         required: true
     },
     type:{

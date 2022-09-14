@@ -11,4 +11,7 @@ router.post("/addProfile",authenticated,userController.createProfile)
 
 router.get("/followers/:id?",authenticated,userController.getAllFollower)
 router.get("/following/:id?",authenticated,userController.getAllFollowing)
+router.get("/getEditProfile",authenticated,userController.getEdit)
+router.get("/EditProfile",authenticated,userController.handelEdit)
+
 module.exports=router
