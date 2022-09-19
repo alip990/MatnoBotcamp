@@ -60,12 +60,15 @@ for (const item of following) {
 //#region get single post
 exports.getSinglePost=async(req,res,next)=>{
   try {
-    const postUser = await post.findById(req.params.id).select('-__v').populate({path: 'imageId',select:'image'}).populate({path: 'userId',select:'fullName userName'});
+    const postUser = await post.findById(req.params.id).select('-__v').populate({path: 'imageId',select:'image'}).populate({path: 'userId',select:'fullName userName',populate:{path:'imageUpload',match:{type:'profile'},select:'image'}});
+  
     if(!postUser){
       const error = new Error("هیچ پستی وجود ندارد");
       error.statusCode = 404;
       throw error;
     }
+    postUser.imageId.image=`${process.env.POSTADDRESS}${postUser.imageId.image}`
+    postUser.userId.imageUpload[0].image=`${process.env.PROFILEADDRESS}${postUser.userId.imageUpload[0].image}`
     const commentPost =await comment.find({postId:postUser._id}).select('_id text').populate({path: 'userId',select:'fullName userName imageUpload',populate:{path:'imageUpload',match:{type:'profile'},select:'image'}});
 
   for (const item of commentPost) {

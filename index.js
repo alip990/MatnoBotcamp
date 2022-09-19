@@ -48,7 +48,7 @@ app.use(errorHandler)
 
 const port = process.env.PORT||4000;
 const server = app.listen(port, () =>
-console.log(`Server Run in ${process.env.NODE_ENV} on port ${port}`)
+console.log(`Server Run  on port ${port}`)
 );
 
 module.exports = server;

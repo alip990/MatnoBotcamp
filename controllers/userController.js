@@ -114,7 +114,9 @@ exports.createProfile = async(req,res,next)=>{
       const oldProfile = await imageUpload.findOne({userId:req.userId,type:'profile'})
       if(oldProfile){
         await fs.unlinkSync( `${appRoot}/public/uploads/profile/${oldProfile.image}`);
-        const index =  await UserAddImage.imageUpload.indexOf(oldProfile)
+        const index =  await UserAddImage.imageUpload.indexOf(oldProfile._id)
+        console.log("00000000000000000000000000000000000000000000000000000");
+        console.log(index);
         if (index > -1) { 
           await UserAddImage.imageUpload.splice(index, 1); 
         }
@@ -141,7 +143,7 @@ exports.createProfile = async(req,res,next)=>{
     UserAddImage.save();
       res
         .status(200)
-        .json({ message: "با موفقیت اضافه شد" });
+        .json({ message: "با موفقیت اضافه شد" ,index});
     
   } catch (error) {
     next(error)
