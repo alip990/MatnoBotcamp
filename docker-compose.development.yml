@@ -1,0 +1,26 @@
+version: "3.3"
+services:
+  db:
+    image: mongo:latest
+    ports:
+      - 27019:27017
+    restart: always
+    volumes:
+      - "mongodb_data_container:/data/db"
+
+  app:
+    build:
+      context: .
+      dockerfile: development.Dockerfile
+    ports:
+      - 4000:4000
+    env_file:
+      - .env
+    volumes:
+      - ./:/usr/src/app
+    entrypoint: "npm start"
+    depends_on:
+      - db
+
+volumes:
+  mongodb_data_container:

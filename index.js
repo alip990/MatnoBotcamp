@@ -1,25 +1,24 @@
-const dotenv = require('dotenv');
+const dotenv = require("dotenv");
 const express = require("express");
-const bodyParser = require('body-parser');
-const fileUpload = require('express-fileupload');
+const bodyParser = require("body-parser");
+const fileUpload = require("express-fileupload");
 
-
-const connectionDB = require('./config/db');
-const {setHeaders} = require('./middleware/headers');
-const {setStatic} =require('./utils/setStatic');
-const {errorHandler} = require('./middleware/errors');
+const connectionDB = require("./config/db");
+const { setHeaders } = require("./middleware/headers");
+const { setStatic } = require("./utils/setStatic");
+const { errorHandler } = require("./middleware/errors");
 
 //#region config
 dotenv.config({
-  path:"./config/config.env"
-})
+  path: "./.env",
+});
 //#endregion
 //#region connection database
 connectionDB();
 //#endregion
 const app = express();
 //#region body parser
-app.use(bodyParser.urlencoded({extended:false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 //#endregion
 //#region headers
@@ -32,23 +31,19 @@ app.use(fileUpload());
 setStatic(app);
 //#endregion
 
-
 //#region Routes
-app.use("/account",require('./routes/accountRoute'));
-app.use("/users",require('./routes/userRoute'));
-app.use("/post",require('./routes/postRoute'));
-app.use("/comment",require('./routes/commentRoute'));
+app.use("/account", require("./routes/accountRoute"));
+app.use("/users", require("./routes/userRoute"));
+app.use("/post", require("./routes/postRoute"));
+app.use("/comment", require("./routes/commentRoute"));
 //#region 404
-app.use(errorHandler)
+app.use(errorHandler);
 //#endregion
 //#endregion
 
-
-
-
-const port = process.env.PORT||4000;
+const port = process.env.PORT || 4000;
 const server = app.listen(port, () =>
-console.log(`Server Run  on port ${port}`)
+  console.log(`Server Run  on port ${port}`)
 );
 
 module.exports = server;
