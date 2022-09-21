@@ -4,7 +4,6 @@ const imageUpload = require('../models/userImageUpload');
 const post= require('../models/post');
 const follow = require('../models/userConnection');
 
-
 const shortId = require("shortid");
 const sharp = require("sharp");
 const appRoot = require('app-root-path');
@@ -48,12 +47,17 @@ exports.UploadImagePost = async (req, res, next) => {
   const image = req.files ? req.files.image : {};
   const fileName = `${shortId.generate()}_${image.name}`;
   const uploadPath = `${appRoot}/public/uploads/post/${fileName}`;
+  const foi = `${appRoot}/public/uploads/post`;
   if (image.length === 0) {
     const error = new Error("باید تصویری را انتخاب کنید");
     error.statusCode = 404;
     throw error;
   }
   try {
+    if(!fs.existsSync(foi)){
+      
+      fs.mkdirSync(foi, { recursive: true })
+    }
     await imageUpload.imageValidation({image});
     await sharp(image.data)
       .resize(800, 800)
@@ -104,19 +108,21 @@ exports.createProfile = async(req,res,next)=>{
     const image = req.files ? req.files.image : {};
     const fileName = `${shortId.generate()}_${image.name}`;
     const uploadPath = `${appRoot}/public/uploads/profile/${fileName}`;
+    const foi =  `${appRoot}/public/uploads/profile`;
     const UserAddImage =await User.findById(req.userId);
     if (image.length === 0) {
       const error = new Error("باید تصویری را انتخاب کنید");
       error.statusCode = 404;
       throw error;
     }
+    if(!fs.existsSync(foi)){
+      fs.mkdirSync(foi, { recursive: true })
+    }
     
       const oldProfile = await imageUpload.findOne({userId:req.userId,type:'profile'})
       if(oldProfile){
         await fs.unlinkSync( `${appRoot}/public/uploads/profile/${oldProfile.image}`);
         const index =  await UserAddImage.imageUpload.indexOf(oldProfile._id)
-        console.log("00000000000000000000000000000000000000000000000000000");
-        console.log(index);
         if (index > -1) { 
           await UserAddImage.imageUpload.splice(index, 1); 
         }
@@ -143,7 +149,7 @@ exports.createProfile = async(req,res,next)=>{
     UserAddImage.save();
       res
         .status(200)
-        .json({ message: "با موفقیت اضافه شد" ,index});
+        .json({ message: "با موفقیت اضافه شد" });
     
   } catch (error) {
     next(error)
