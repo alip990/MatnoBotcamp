@@ -8,7 +8,6 @@ const follow = require('../models/userConnection');
 const shortId = require("shortid");
 const sharp = require("sharp");
 const appRoot = require('app-root-path');
-const yup = require('yup');
 const fs = require('fs');
 
 //#region follow Or unfollow
@@ -67,6 +66,9 @@ exports.UploadImagePost = async (req, res, next) => {
       userId : req.userId,
       type:"post"
     });  
+    const UserAddImage =await User.findById(req.userId);
+    UserAddImage.imageUpload.push(img._id);
+    UserAddImage.save();
     res
       .status(200)
       .json({ message: "با موفقیت اضافه شد", filePath: `${process.env.API}/uploads/post/${fileName}`, imageId:img._id });
@@ -102,6 +104,7 @@ exports.createProfile = async(req,res,next)=>{
     const image = req.files ? req.files.image : {};
     const fileName = `${shortId.generate()}_${image.name}`;
     const uploadPath = `${appRoot}/public/uploads/profile/${fileName}`;
+    const UserAddImage =await User.findById(req.userId);
     if (image.length === 0) {
       const error = new Error("باید تصویری را انتخاب کنید");
       error.statusCode = 404;
@@ -111,8 +114,15 @@ exports.createProfile = async(req,res,next)=>{
       const oldProfile = await imageUpload.findOne({userId:req.userId,type:'profile'})
       if(oldProfile){
         await fs.unlinkSync( `${appRoot}/public/uploads/profile/${oldProfile.image}`);
+        const index =  await UserAddImage.imageUpload.indexOf(oldProfile._id)
+        console.log("00000000000000000000000000000000000000000000000000000");
+        console.log(index);
+        if (index > -1) { 
+          await UserAddImage.imageUpload.splice(index, 1); 
+        }
+
         await imageUpload.findByIdAndRemove(oldProfile._id.toString())
-       
+      
       
 
       }
@@ -128,9 +138,12 @@ exports.createProfile = async(req,res,next)=>{
         userId : req.userId,
         type:"profile"
       });  
+     
+    UserAddImage.imageUpload.push(img._id);
+    UserAddImage.save();
       res
         .status(200)
-        .json({ message: "با موفقیت اضافه شد" });
+        .json({ message: "با موفقیت اضافه شد" ,index});
     
   } catch (error) {
     next(error)
@@ -142,7 +155,6 @@ exports.createProfile = async(req,res,next)=>{
 //#region get follower
 exports.getAllFollower = async(req,res,next)=>{
   try {
-    console.log("0000000000000000000000000000000000");
     let userId = req.params.id
     if(userId===undefined){
       userId = req.userId
@@ -158,7 +170,6 @@ exports.getAllFollower = async(req,res,next)=>{
 //#region get following
 exports.getAllFollowing = async(req,res,next)=>{
   try {
-    console.log("0000000000000000000000000000000000");
     let userId = req.params.id
     if(userId===undefined){
       userId = req.userId
@@ -169,4 +180,62 @@ exports.getAllFollowing = async(req,res,next)=>{
     next(error);
   }
 }
+//#endregion
+
+//#region edit
+//#region get information for edit
+exports.getEdit=async(req,res,next)=>{
+  try {
+    const userEdit = await User.findById(req.userId).select('-_id fullName email userName phone');
+    if(!userEdit){
+      const err=new Error("کاریری یافت نشد");
+      err.statusCode=404;
+      throw err;
+    }
+    res.status(200).json({userEdit})
+  } catch (error) {
+    next(error);
+  }
+}
+//#endregion
+//#region edit
+exports.handelEdit=async(req,res,next)=>{
+  try {
+    const { fullName, email ,phone,userName} = req.body;
+    const user = await User.findById(req.userId);
+    if(!user){
+      const err=new Error("کاریری یافت نشد");
+      err.statusCode=404;
+      throw err;
+    }
+    let isEmailExist = await User.findOne({ email });
+    let isUserNameExit = await User.findOne({userName});
+    let isPhoneExit = await User.findOne({phone});
+    if (isEmailExist&&email!==user.email) {
+      const error = new Error(" کاربری با این ایمیل وجود دارد");
+          error.statusCode = 404;
+          throw error;
+    } 
+    else if(isUserNameExit&&userName!==user.userName){
+      const error = new Error(" کاربری با این نام کاربری وجود دارد");
+      error.statusCode = 404;
+      throw error;
+    }
+    else if(isPhoneExit&&phone!==user.phone){
+      const error = new Error(" کاربری با این شماره تلفن  وجود دارد");
+      error.statusCode = 404;
+      throw error;
+    }else{
+      user.fullName=fullName;
+      user.phone = phone;
+      user.userName=userName;
+      user.email=email
+      user.save();
+      res.status(200).json({message:"با موفقیت ویرایش شد"})
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+//#endregion
 //#endregion

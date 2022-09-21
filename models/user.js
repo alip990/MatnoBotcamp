@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Yup = require('yup'); 
+const postUpload = require('./userImageUpload');
 
 const {schema} = require('./security/userValidation');
 
@@ -39,6 +39,11 @@ const userSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+    imageUpload:
+       
+            [{type: mongoose.Schema.Types.ObjectId,ref:'imageUpload'}]
+       
+    
     
 });
 

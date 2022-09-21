@@ -18,7 +18,7 @@ exports.createComment=async(req,res,next)=>{
         userId : req.userId,
         postId : req.params.id
        })
-       res.status(200).json({message:"با موفقیت کامنت گذاشته شد"});
+       res.status(201).json({message:"با موفقیت کامنت گذاشته شد"});
     } catch (error) {
         next(error)
     }
