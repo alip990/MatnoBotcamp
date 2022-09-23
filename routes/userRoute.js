@@ -6,12 +6,12 @@ const router = new Router();
 
 router.get("/followOrUmFollow/:id",authenticated,userController.followOrUnFollow)
 router.post("/uploadPostImage",authenticated,userController.UploadImagePost)
-router.post("/createPost",authenticated,userController.createPost)
-router.post("/addProfile",authenticated,userController.createProfile)
+router.post("/post",authenticated,userController.createPost)
+router.post("/profile",authenticated,userController.createProfile)
 
 router.get("/followers/:id?",authenticated,userController.getAllFollower)
 router.get("/following/:id?",authenticated,userController.getAllFollowing)
-router.get("/getEditProfile",authenticated,userController.getEdit)
-router.get("/EditProfile",authenticated,userController.handelEdit)
+router.get("/editProfile",authenticated,userController.getEdit)
+router.post("/editProfile",authenticated,userController.handelEdit)
 
 module.exports=router

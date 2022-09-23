@@ -93,8 +93,8 @@ exports.createPost=async(req,res,next)=>{
       error.statusCode = 404;
       throw error;
     }
-    await post.create({...req.body,userId:req.userId})
-    res.status(201).json({message:"با موفقیت پست جدید ایجاد شد"})
+   const newPost =  await post.create({...req.body,userId:req.userId})
+    res.status(201).json({message:"با موفقیت پست جدید ایجاد شد",postID:newPost._id})
   } catch (error) {
     next(error)
   }
