@@ -121,7 +121,11 @@ exports.createProfile = async(req,res,next)=>{
     
       const oldProfile = await imageUpload.findOne({userId:req.userId,type:'profile'})
       if(oldProfile){
-        await fs.unlinkSync( `${appRoot}/public/uploads/profile/${oldProfile.image}`);
+        const pathImage=`${appRoot}/public/uploads/profile/${oldProfile.image}`
+        if(fs.existsSync(pathImage)){
+          console.log("000000000000000000000000000000000000000");
+          await fs.unlinkSync(pathImage);
+        }
         const index =  await UserAddImage.imageUpload.indexOf(oldProfile._id)
         if (index > -1) { 
           await UserAddImage.imageUpload.splice(index, 1); 
