@@ -12,8 +12,13 @@ exports.getProfilePage=async(req,res,next)=>{
     if(userId===undefined){
       userId = req.userId
     }
+    
     const userPage = await user.findById(userId).select('fullName userName').populate({path:'imageUpload',match:{type:'profile'},select:'image'}) 
-    userPage.imageUpload[0].image=`${process.env.PROFILEADDRESS}${userPage.imageUpload[0].image}`
+console.log(userPage);
+    if(userPage.imageUpload.length!==0){
+      userPage.imageUpload[0].image=`${process.env.PROFILEADDRESS}${userPage.imageUpload[0].image}`
+
+    }
     const numberPosts = await post.find({ userId:  userId}).count();
     const posts = await post.find({ userId: userId }).select('title caption').populate({path:'imageId',select:'image'}).sort({createdAt:'desc'});
     for (const item of posts) {
@@ -45,9 +50,11 @@ for (const item of following) {
 
     for (const item of posts) {
       item.imageId.image=`${process.env.POSTADDRESS}${item.imageId.image}`
+     if(item.userId.imageUpload.length!==0){
       const text=item.userId.imageUpload[0].image.search(process.env.PROFILEADDRESS)
       if(text===-1){
       item.userId.imageUpload[0].image=`${process.env.PROFILEADDRESS}${item.userId.imageUpload[0].image}`
+     }
       }
     }
     const numberOfPosts =posts.length;
@@ -68,13 +75,18 @@ exports.getSinglePost=async(req,res,next)=>{
       throw error;
     }
     postUser.imageId.image=`${process.env.POSTADDRESS}${postUser.imageId.image}`
-    postUser.userId.imageUpload[0].image=`${process.env.PROFILEADDRESS}${postUser.userId.imageUpload[0].image}`
+    if( postUser.userId.imageUpload.length!==0){
+      postUser.userId.imageUpload[0].image=`${process.env.PROFILEADDRESS}${postUser.userId.imageUpload[0].image}`
+
+    }
     const commentPost =await comment.find({postId:postUser._id}).select('_id text').populate({path: 'userId',select:'fullName userName imageUpload',populate:{path:'imageUpload',match:{type:'profile'},select:'image'}});
 
   for (const item of commentPost) {
-    const text=item.userId.imageUpload[0].image.search(process.env.PROFILEADDRESS)
+    if(item.userId.imageUpload.length!==0){
+      const text=item.userId.imageUpload[0].image.search(process.env.PROFILEADDRESS)
     if(text===-1){
     item.userId.imageUpload[0].image=`${process.env.PROFILEADDRESS}${item.userId.imageUpload[0].image}`
+    }
     }
   }
  
